@@ -1,4 +1,5 @@
-- hosts: workers
-  become: yes
+- name: Setup k3s workers
+  hosts: workers
+  become: true
   roles:
     - k3s-worker

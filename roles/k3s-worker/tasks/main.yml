@@ -6,7 +6,7 @@
   register: master_token
 
 - name: Install k3s worker
-  shell: |
+  ansible.builtin.shell: |
     curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip }}:6443 \
     K3S_TOKEN={{ master_token['content'] | b64decode }} sh -
   args:

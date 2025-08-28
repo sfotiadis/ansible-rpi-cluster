@@ -1,5 +1,5 @@
 - name: Install k3s master
-  shell: |
+  ansible.builtin.shell: |
     curl -sfL https://get.k3s.io | sh -s - \
       --bind-address {{ master_ip }} \
       --write-kubeconfig-mode 644 \

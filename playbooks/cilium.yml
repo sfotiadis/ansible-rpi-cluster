@@ -1,4 +1,5 @@
-- hosts: master
-  become: yes
+- name: Cilium Setup
+  hosts: master
+  become: true
   roles:
     - cilium
