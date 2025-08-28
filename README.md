@@ -1,7 +1,6 @@
 # Ansible K3s Cluster Setup (Raspberry Pi)
 [![Ansible](https://img.shields.io/badge/ansible-blue.svg?logo=ansible)](https://www.ansible.com/)
 [![K3s](https://img.shields.io/badge/k3s-black.svg?logo=k3s)](https://k3s.io/)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?logo=kubernetes&logoColor=white)](https://kubernetes.io/)
 [![Cilium](https://img.shields.io/badge/cilium-white.svg?logo=cilium)](https://cilium.io/)
 
 [![CI](https://github.com/sfotiadis/ansible-rpi-cluster/actions/workflows/ci.yml/badge.svg)](https://github.com/sfotiadis/ansible-rpi-cluster/actions/workflows/ci.yml)
