@@ -6,5 +6,6 @@
     creates: /usr/local/bin/cilium
 
 - name: Enable Hubble
-  ansible.builtin.shell: |
-    cilium hubble enable
+  ansible.builtin.shell: cilium hubble enable
+  register: hubble_result
+  changed_when: "'already enabled' not in hubble_result.stdout"

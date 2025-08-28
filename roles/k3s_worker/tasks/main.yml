@@ -5,9 +5,17 @@
   run_once: true
   register: k3s_worker_master_token
 
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s_install.sh
+    mode: '0755'
+
 - name: Install k3s worker
   ansible.builtin.shell: |
-    curl -sfL https://get.k3s.io | K3S_URL=https://{{ master_ip }}:6443 \
-    K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode }} sh -
+    set -o pipefail
+    K3S_URL=https://{{ master_ip }}:6443 \
+    K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode }} \
+    /tmp/k3s_install.sh --write-kubeconfig-mode 644
   args:
     creates: /usr/local/bin/k3s-agent
