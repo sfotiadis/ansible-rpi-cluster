@@ -1,0 +1,20 @@
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s_install.sh
+    mode: '0755'
+
+- name: Install k3s master
+  ansible.builtin.command: >
+    /tmp/k3s_install.sh
+    --bind-address {{ master_ip }}
+    --write-kubeconfig-mode 644
+    --flannel-backend=none
+    --disable servicelb
+    --disable-network-policy
+    --disable metrics-server
+    --disable-cloud-controller
+    --disable local-storage
+    --disable traefik
+  args:
+    creates: /usr/local/bin/k3s

@@ -1,3 +1,8 @@
-- import_playbook: master.yml
-- import_playbook: workers.yml
-- import_playbook: cilium.yml
+- name: Setup k3s master node
+  import_playbook: master.yml
+
+- name: Setup k3s workers
+  import_playbook: workers.yml
+
+- name: Cilium Setup
+  import_playbook: cilium.yml
