@@ -1,0 +1,14 @@
+- name: Install k3s master
+  shell: |
+    curl -sfL https://get.k3s.io | sh -s - \
+      --bind-address {{ master_ip }} \
+      --write-kubeconfig-mode 644 \
+      --flannel-backend=none \
+      --disable servicelb \
+      --disable-network-policy \
+      --disable "metrics-server" \
+      --disable-cloud-controller \
+      --disable local-storage \
+      --disable "traefik"
+  args:
+    creates: /usr/local/bin/k3s

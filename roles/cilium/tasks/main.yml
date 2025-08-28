@@ -1,0 +1,10 @@
+- name: Install Cilium CNI
+  shell: |
+    cilium install --version 1.16.3 \
+      --set=ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16"
+  args:
+    creates: /usr/local/bin/cilium
+
+- name: Enable Hubble
+  shell: |
+    cilium hubble enable
