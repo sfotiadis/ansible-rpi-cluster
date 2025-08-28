@@ -3,7 +3,7 @@
 [![K3s](https://img.shields.io/badge/k3s-lightweight%20kubernetes-orange.svg?logo=kubernetes)](https://k3s.io/)
 [![Cilium](https://img.shields.io/badge/cni-cilium-66C2A5.svg?logo=linux)](https://cilium.io/)
 
-[![CI](https://github.com/USERNAME/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/sfotiadis/ansible-rpi-cluster/actions/workflows/ci.yml)
+[![CI](https://github.com/sfotiadis/ansible-rpi-cluster/actions/workflows/ci.yml/badge.svg)](https://github.com/sfotiadis/ansible-rpi-cluster/actions/workflows/ci.yml)
 
 
 This repository contains the Ansible automation to install and manage a lightweight **K3s Kubernetes cluster** on Raspberry Pis.  
