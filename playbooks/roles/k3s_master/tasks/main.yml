@@ -7,7 +7,7 @@
 - name: Install k3s master
   ansible.builtin.command: >
     /tmp/k3s_install.sh
-    --bind-address {{ master_ip }}
+    --bind-address {{ ansible_host }}
     --write-kubeconfig-mode 644
     --flannel-backend=none
     --disable servicelb

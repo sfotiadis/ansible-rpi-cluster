@@ -14,7 +14,7 @@
 - name: Install k3s worker
   ansible.builtin.shell: |
     set -o pipefail
-    K3S_URL=https://{{ master_ip }}:6443 \
+    K3S_URL=https://{{ hostvars['rpi-master'].ansible_host }}:6443 \
     K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode }} \
     /tmp/k3s_install.sh --write-kubeconfig-mode 644
   args:
