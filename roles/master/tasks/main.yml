@@ -23,12 +23,12 @@
   ansible.builtin.systemd:
     name: k3s
     state: started
-  register: k3s_service_status
+  register: master_k3s_service_status
 
 - name: Fail if K3s is not running
   ansible.builtin.fail:
     msg: "K3s service is not running!"
-  when: not k3s_service_status.status.ActiveState == "active"
+  when: not master_k3s_service_status.status.ActiveState == "active"
 
 - name: Ensure ~/.kube directory exists
   ansible.builtin.file:
