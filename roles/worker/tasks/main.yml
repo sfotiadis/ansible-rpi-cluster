@@ -3,7 +3,7 @@
     src: /var/lib/rancher/k3s/server/node-token
   delegate_to: rp0
   run_once: true
-  register: k3s_worker_master_token
+  register: worker_master_token
 
 - name: Download k3s install script
   ansible.builtin.get_url:
@@ -14,7 +14,7 @@
 - name: Install k3s worker
   ansible.builtin.shell: |
     K3S_URL=https://{{ hostvars['rp0']['ansible_host'] }}:6443 \
-    K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode | trim }} \
+    K3S_TOKEN={{ worker_master_token['content'] | b64decode | trim }} \
     /tmp/k3s_install.sh agent
   args:
     creates: /usr/local/bin/k3s-agent
