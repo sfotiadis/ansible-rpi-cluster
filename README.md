@@ -15,9 +15,10 @@ For the GitOps configuration itself, see the companion repository [sfotiadis/flu
 
 ## Features
 - Automated installation of **K3s master** and **worker nodes**
-- Secure handling of cluster IPs via **Ansible Vault**
+- Secure handling of sensible data via **Ansible Vault**
 - Automatic retrieval of the **k3s join token** from the master node
-- Installation of **Cilium CNI** and **Hubble observability**
+- Installation of **Cilium**
+- Kubernetes secret creation to store SOPS GPG key in the cluster
 - Ready for GitOps with [**sfotiadis/flux-rpi-cluster**](https://github.com/sfotiadis/flux-rpi-cluster)
 
 ---
