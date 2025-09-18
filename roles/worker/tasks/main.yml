@@ -1,7 +1,7 @@
 - name: Get node token from master
   ansible.builtin.slurp:
     src: /var/lib/rancher/k3s/server/node-token
-  delegate_to: rpi-master
+  delegate_to: rp0
   run_once: true
   register: k3s_worker_master_token
 
@@ -13,9 +13,16 @@
 
 - name: Install k3s worker
   ansible.builtin.shell: |
-    set -o pipefail
-    K3S_URL=https://{{ hostvars['rpi-master'].ansible_host }}:6443 \
-    K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode }} \
-    /tmp/k3s_install.sh --write-kubeconfig-mode 644
+    K3S_URL=https://{{ hostvars['rp0']['ansible_host'] }}:6443 \
+    K3S_TOKEN={{ k3s_worker_master_token['content'] | b64decode | trim }} \
+    /tmp/k3s_install.sh agent
   args:
     creates: /usr/local/bin/k3s-agent
+    executable: /bin/bash
+
+- name: Ensure k3s-agent service is running
+  ansible.builtin.systemd:
+    name: k3s-agent
+    state: started
+    enabled: true
+  become: true

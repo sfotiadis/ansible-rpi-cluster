@@ -1,0 +1,2 @@
+# playbooks/roles/k3s_master/tasks/main.yml
+- import_tasks: install.yml

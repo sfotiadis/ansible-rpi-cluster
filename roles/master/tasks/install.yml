@@ -1,0 +1,88 @@
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s_install.sh
+    mode: '0755'
+
+- name: Install k3s master
+  ansible.builtin.command: >
+    /tmp/k3s_install.sh
+    --bind-address {{ ansible_host }}
+    --write-kubeconfig-mode 644
+    --flannel-backend=none
+    --disable servicelb
+    --disable-network-policy
+    --disable metrics-server
+    --disable-cloud-controller
+    --disable local-storage
+    --disable traefik
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Check if k3s service is running
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+  register: k3s_service_status
+
+- name: Fail if K3s is not running
+  ansible.builtin.fail:
+    msg: "K3s service is not running!"
+  when: not k3s_service_status.status.ActiveState == "active"
+
+- name: Ensure ~/.kube directory exists
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    mode: '0700'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Copy K3s kubeconfig to user's home
+  ansible.builtin.copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'
+
+- name: Add Cilium Helm repo
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io/
+
+- name: Update repo cache
+  kubernetes.core.helm:
+    kubeconfig: "/home/{{ansible_user}}/.kube/config"
+    name: cilium
+    namespace: kube-system
+    chart_ref: cilium/cilium
+    update_repo_cache: yes
+
+- name: Install Cilium chart
+  kubernetes.core.helm:
+    kubeconfig: "/home/{{ansible_user}}/.kube/config"
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "1.18.2"
+    release_namespace: kube-system
+    create_namespace: false
+    values:
+      ipam:
+        operator:
+          clusterPoolIPv4PodCIDRList:
+            - "{{cluster_pod_cidrs}}"
+
+- name: Create gpg secret
+  kubernetes.core.k8s:
+    kubeconfig: "/home/{{ansible_user}}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: sops-gpg
+        namespace: flux-system
+      type: Opaque
+      data:
+        sops.asc: "{{ gpg_private_key | b64encode }}"

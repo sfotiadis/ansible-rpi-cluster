@@ -3,6 +3,3 @@
 
 - name: Setup k3s workers
   import_playbook: workers.yml
-
-- name: Cilium Setup
-  import_playbook: cilium.yml
