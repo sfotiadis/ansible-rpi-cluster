@@ -6,3 +6,4 @@ all:
     worker:
       hosts:
         rp1:
+        rp2:
