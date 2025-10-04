@@ -1,0 +1,13 @@
+- name: Create gpg secret
+  kubernetes.core.k8s:
+    kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: sops-gpg
+        namespace: flux-system
+      type: Opaque
+      data:
+        sops.asc: "{{ gpg_private_key | b64encode }}"

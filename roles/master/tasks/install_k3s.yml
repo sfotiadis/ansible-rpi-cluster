@@ -1,0 +1,47 @@
+- name: Download k3s install script
+  ansible.builtin.get_url:
+    url: https://get.k3s.io
+    dest: /tmp/k3s_install.sh
+    mode: '0755'
+
+- name: Install k3s master
+  ansible.builtin.command: >
+    /tmp/k3s_install.sh
+    --bind-address {{ ansible_host }}
+    --write-kubeconfig-mode 644
+    --flannel-backend=none
+    --disable servicelb
+    --disable-network-policy
+    --disable metrics-server
+    --disable-cloud-controller
+    --disable local-storage
+    --disable traefik
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Check if k3s service is running
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+  register: master_k3s_service_status
+
+- name: Fail if K3s is not running
+  ansible.builtin.fail:
+    msg: "K3s service is not running!"
+  when: not master_k3s_service_status.status.ActiveState == "active"
+
+- name: Ensure ~/.kube directory exists
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user }}/.kube"
+    state: directory
+    mode: '0700'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Copy K3s kubeconfig to user's home
+  ansible.builtin.copy:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "/home/{{ ansible_user }}/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0644'

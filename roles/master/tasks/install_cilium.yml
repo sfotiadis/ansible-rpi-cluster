@@ -1,0 +1,26 @@
+- name: Add Cilium Helm repo
+  kubernetes.core.helm_repository:
+    name: cilium
+    repo_url: https://helm.cilium.io/
+
+- name: Update repo cache
+  kubernetes.core.helm:
+    kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+    name: cilium
+    namespace: kube-system
+    chart_ref: cilium/cilium
+    update_repo_cache: true
+
+- name: Install Cilium chart
+  kubernetes.core.helm:
+    kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+    name: cilium
+    chart_ref: cilium/cilium
+    chart_version: "1.18.2"
+    release_namespace: kube-system
+    create_namespace: false
+    values:
+      ipam:
+        operator:
+          clusterPoolIPv4PodCIDRList:
+            - "{{ cluster_pod_cidrs }}"
