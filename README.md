@@ -34,3 +34,9 @@ sudo apt install ansible -y
 ```bash
 ansible-playbook playbooks/site.yml --ask-vault-pass
 ```
+or dry run
+
+```bash
+ansible-playbook playbooks/site.yml --ask-vault-pass --check
+```
+
