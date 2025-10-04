@@ -1,4 +1,10 @@
 ---
-- import_tasks: install_k3s.yml
-- import_tasks: install_cilium.yml
-- import_tasks: sops.yml
+- name: Setup k3s master node
+  ansible.builtin.import_tasks: 
+    file: install_k3s.yml
+- name: Install Cilium CNI
+  ansible.builtin.import_tasks: 
+    file: install_cilium.yml
+- name: Install SOPS Secret
+  ansible.builtin.import_tasks: 
+    file: sops.yml
