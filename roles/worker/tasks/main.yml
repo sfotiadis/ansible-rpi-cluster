@@ -1,3 +1,4 @@
+---
 - name: Get node token from master
   ansible.builtin.slurp:
     src: /var/lib/rancher/k3s/server/node-token

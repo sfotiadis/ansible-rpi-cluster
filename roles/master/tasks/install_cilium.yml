@@ -1,3 +1,4 @@
+---
 - name: Add Cilium Helm repo
   kubernetes.core.helm_repository:
     name: cilium

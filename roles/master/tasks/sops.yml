@@ -1,3 +1,4 @@
+---
 - name: Create gpg secret
   kubernetes.core.k8s:
     kubeconfig: "/home/{{ ansible_user }}/.kube/config"

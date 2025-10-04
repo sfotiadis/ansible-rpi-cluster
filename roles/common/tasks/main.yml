@@ -1,3 +1,4 @@
+---
 - name: Check if dphys-swapfile service exists
   ansible.builtin.stat:
     path: /etc/systemd/system/dphys-swapfile.service
@@ -7,14 +8,14 @@
   ansible.builtin.service:
     name: dphys-swapfile
     state: stopped
-    enabled: no
+    enabled: false
   when: common_dphys_service.stat.exists
 
 - name: Remove dphys-swapfile package
   ansible.builtin.apt:
     name: dphys-swapfile
     state: absent
-    purge: yes
+    purge: true
   when: ansible_os_family == "Debian"
 
 - name: Verify swap is disabled
@@ -26,4 +27,3 @@
   ansible.builtin.fail:
     msg: "Swap is still active! Please check manually."
   when: common_swap_status.stdout != ""
-
