@@ -1,0 +1,34 @@
+---
+- name: Check if Helm is installed
+  ansible.builtin.command:
+    cmd: helm version --short
+  register: helm_check
+  ignore_errors: true
+
+- name: Download Helm binary if not installed
+  ansible.builtin.get_url:
+    url: "https://get.helm.sh/helm-{{ helm_version }}-linux-arm64.tar.gz"
+    dest: "/tmp/helm-{{ helm_version }}.tar.gz"
+    mode: '0644'
+  when: helm_check.failed
+
+- name: Extract Helm
+  ansible.builtin.unarchive:
+    src: "/tmp/helm-{{ helm_version }}.tar.gz"
+    dest: "/tmp/"
+    remote_src: yes
+    creates: "/tmp/linux-arm64/helm"
+  when: helm_check.failed
+
+- name: Move Helm binary to /usr/local/bin
+  ansible.builtin.command:
+    cmd: mv /tmp/linux-arm64/helm /usr/local/bin/helm
+  become: true
+  args:
+    creates: /usr/local/bin/helm
+  when: helm_check.failed
+
+- name: Verify Helm installation
+  ansible.builtin.command:
+    cmd: helm version --short
+  register: helm_installed

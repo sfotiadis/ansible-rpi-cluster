@@ -32,11 +32,11 @@ sudo apt install ansible -y
 
 ## Run Cluster Setup
 ```bash
-ansible-playbook playbooks/site.yml --ask-vault-pass
+ansible-playbook -i inventories/<stage> playbooks/site.yml --ask-vault-pass
 ```
 or dry run
 
 ```bash
-ansible-playbook playbooks/site.yml --ask-vault-pass --check
+ansible-playbook -i inventories/<stage> playbooks/site.yml --ask-vault-pass --check
 ```
 

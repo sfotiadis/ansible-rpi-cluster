@@ -4,6 +4,13 @@
     url: https://get.k3s.io
     dest: /tmp/k3s_install.sh
     mode: '0755'
+  delegate_to: localhost
+
+- name: Copy k3s install script to target
+  ansible.builtin.copy:
+    src: /tmp/k3s_install.sh
+    dest: /tmp/k3s_install.sh
+    mode: '0755'
 
 - name: Install k3s master
   ansible.builtin.command: >
@@ -25,11 +32,15 @@
     name: k3s
     state: started
   register: master_k3s_service_status
+  when: not ansible_check_mode
+
 
 - name: Fail if K3s is not running
   ansible.builtin.fail:
     msg: "K3s service is not running!"
-  when: not master_k3s_service_status.status.ActiveState == "active"
+  when:
+    - not ansible_check_mode
+    - not master_k3s_service_status.status.ActiveState == "active"
 
 - name: Ensure ~/.kube directory exists
   ansible.builtin.file:
@@ -38,6 +49,7 @@
     mode: '0700'
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+  check_mode: false
 
 - name: Copy K3s kubeconfig to user's home
   ansible.builtin.copy:

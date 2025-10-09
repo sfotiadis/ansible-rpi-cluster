@@ -2,9 +2,15 @@
 - name: Setup k3s master node
   ansible.builtin.import_tasks:
     file: install_k3s.yml
+- name: Install Helm
+  ansible.builtin.import_tasks:
+    file: install_helm.yml
 - name: Install Cilium CNI
   ansible.builtin.import_tasks:
     file: install_cilium.yml
 - name: Install SOPS Secret
   ansible.builtin.import_tasks:
     file: sops.yml
+- name: Install FluxCD
+  ansible.builtin.import_tasks:
+    file: install_flux.yml

@@ -12,3 +12,4 @@
       type: Opaque
       data:
         sops.asc: "{{ gpg_private_key | b64encode }}"
+  when: not ansible_check_mode

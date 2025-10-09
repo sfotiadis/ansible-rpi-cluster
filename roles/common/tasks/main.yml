@@ -1,15 +1,13 @@
 ---
-- name: Check if dphys-swapfile service exists
-  ansible.builtin.stat:
-    path: /etc/systemd/system/dphys-swapfile.service
-  register: common_dphys_service
+- name: Gather service facts
+  ansible.builtin.service_facts:
 
 - name: Stop dphys-swapfile service
   ansible.builtin.service:
     name: dphys-swapfile
     state: stopped
     enabled: false
-  when: common_dphys_service.stat.exists
+  when: "'dphys-swapfile.service' in ansible_facts.services"
 
 - name: Remove dphys-swapfile package
   ansible.builtin.apt:
@@ -26,4 +24,4 @@
 - name: Fail if swap is still active
   ansible.builtin.fail:
     msg: "Swap is still active! Please check manually."
-  when: common_swap_status.stdout != ""
+  when: common_swap_status.stdout != "" | trim != ""
