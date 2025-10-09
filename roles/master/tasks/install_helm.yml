@@ -4,6 +4,8 @@
     cmd: helm version --short
   register: master_helm_check
   ignore_errors: true
+  changed_when: false
+
 
 - name: Download Helm binary if not installed
   ansible.builtin.get_url:
@@ -29,8 +31,6 @@
   args:
     creates: /usr/local/bin/helm
   when: master_helm_check.failed
-  changed_when: false
-
 
 - name: Verify Helm installation
   ansible.builtin.command:
