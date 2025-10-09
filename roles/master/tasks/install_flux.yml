@@ -10,7 +10,9 @@
 
 - name: Download Flux manifests
   ansible.builtin.get_url:
-    url: https://github.com/fluxcd/flux2/releases/tag/v2.7.2/download/install.yaml
+    url: >
+      https://github.com/fluxcd/flux2/releases/
+      tag/v2.7.2/download/install.yaml
     dest: /tmp/install.yaml
     mode: '0644'
   delegate_to: localhost
@@ -25,7 +27,7 @@
 
 - name: exit if token is not provided
   ansible.builtin.fail:
-    msg: "flux_git_token variable is not defined. Please provide a GitHub token with repo access."
+    msg: "flux_git_token variable is not defined."
   when: flux_git_token is not defined
   check_mode: false
 
