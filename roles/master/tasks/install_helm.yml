@@ -29,8 +29,11 @@
   args:
     creates: /usr/local/bin/helm
   when: master_helm_check.failed
+  changed_when: false
+
 
 - name: Verify Helm installation
   ansible.builtin.command:
     cmd: helm version --short
   register: master_helm_installed
+  changed_when: false
