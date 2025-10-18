@@ -1,4 +1,24 @@
 ---
+- name: Install Python dependencies for Kubernetes module via apt
+  ansible.builtin.apt:
+    name:
+      - python3-kubernetes
+      - python3-openshift
+    state: present
+    update_cache: true
+  become: true
+
+- name: Ensure flux-system namespace exists
+  kubernetes.core.k8s:
+    kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: flux-system
+  when: not ansible_check_mode
+
 - name: Create gpg secret
   kubernetes.core.k8s:
     kubeconfig: "/home/{{ ansible_user }}/.kube/config"
