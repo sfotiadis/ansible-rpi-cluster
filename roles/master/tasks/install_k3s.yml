@@ -2,19 +2,20 @@
 - name: Download k3s install script
   ansible.builtin.get_url:
     url: https://get.k3s.io
-    dest: /tmp/k3s_install.sh
+    dest: /home/{{ ansible_user }}/k3s_install.sh
     mode: '0755'
   delegate_to: localhost
-
+  become: false
+  
 - name: Copy k3s install script to target
   ansible.builtin.copy:
-    src: /tmp/k3s_install.sh
-    dest: /tmp/k3s_install.sh
+    src: /home/{{ ansible_user }}/k3s_install.sh
+    dest: /home/{{ ansible_user }}/k3s_install.sh
     mode: '0755'
 
 - name: Install k3s master
   ansible.builtin.command: >
-    /tmp/k3s_install.sh
+    /home/{{ ansible_user }}/k3s_install.sh
     --bind-address {{ ansible_host }}
     --write-kubeconfig-mode 644
     --flannel-backend=none
@@ -58,3 +59,4 @@
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
     mode: '0644'
+    remote_src: true

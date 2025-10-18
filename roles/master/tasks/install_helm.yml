@@ -1,39 +1,50 @@
 ---
+- name: Ensure temporary directory exists
+  ansible.builtin.file:
+    path: /tmp/helm_install
+    state: directory
+    mode: '0755'
+
 - name: Check if Helm is installed
-  ansible.builtin.command:
-    cmd: helm version --short
-  register: master_helm_check
+  ansible.builtin.command: helm version --short
+  register: helm_check
   ignore_errors: true
   changed_when: false
 
-
 - name: Download Helm binary if not installed
   ansible.builtin.get_url:
-    url: "https://get.helm.sh/helm-{{ helm_version }}-linux-arm64.tar.gz"
-    dest: "/tmp/helm-{{ helm_version }}.tar.gz"
+    url: "https://get.helm.sh/helm-v3.16.3-linux-arm64.tar.gz"
+    dest: "/tmp/helm_install/helm-v3.16.3-linux-arm64.tar.gz"
     mode: '0644'
-  when: master_helm_check.failed
+  when: helm_check.failed
 
-- name: Extract Helm
+- name: Extract Helm archive on remote
   ansible.builtin.unarchive:
-    src: "/tmp/helm-{{ helm_version }}.tar.gz"
-    dest: "/tmp/"
+    src: "/tmp/helm_install/helm-v3.16.3-linux-arm64.tar.gz"
+    dest: "/tmp/helm_install"
     remote_src: true
-    creates: "/tmp/linux-arm64/helm"
-  when: master_helm_check.failed
+  when: helm_check.failed
 
 - name: Move Helm binary to /usr/local/bin
   ansible.builtin.copy:
-    src: /tmp/linux-arm64/helm
+    src: "/tmp/helm_install/linux-arm64/helm"
     dest: /usr/local/bin/helm
     mode: '0755'
+    remote_src: true
   become: true
-  args:
-    creates: /usr/local/bin/helm
-  when: master_helm_check.failed
+  when: helm_check.failed
 
 - name: Verify Helm installation
-  ansible.builtin.command:
-    cmd: helm version --short
-  register: master_helm_installed
+  ansible.builtin.command: helm version --short
+  register: helm_installed
   changed_when: false
+
+- name: Show installed Helm version
+  ansible.builtin.debug:
+    msg: "Helm successfully installed: {{ helm_installed.stdout }}"
+
+- name: Clean up temporary files
+  ansible.builtin.file:
+    path: /tmp/helm_install
+    state: absent
+  when: helm_check.failed

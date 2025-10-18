@@ -6,16 +6,20 @@
     name: flux-system
     state: present
     kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+  delegate_to: localhost
   when: not ansible_check_mode
 
 - name: Download Flux manifests
-  ansible.builtin.get_url:
-    url: |
-      https://github.com/fluxcd/flux2/releases/tag/v2.7.2/download/install.yaml
-    dest: /tmp/install.yaml
-    mode: '0644'
+  ansible.builtin.command:
+    cmd: >
+      curl -fsSL
+      https://github.com/fluxcd/flux2/releases/download/v2.7.2/install.yaml
+      -o /tmp/install.yaml
+  args:
+    creates: /tmp/install.yaml
   delegate_to: localhost
-  check_mode: false
+  become: false
+  changed_when: false
 
 - name: Apply Flux manifests via kubernetes.core.k8s
   kubernetes.core.k8s:
@@ -23,6 +27,8 @@
     state: present
     src: /tmp/install.yaml
   when: not ansible_check_mode
+  delegate_to: localhost
+  become: false
 
 - name: Exit if token is not provided
   ansible.builtin.fail:
@@ -48,6 +54,7 @@
 - name: Create GitRepository resource
   kubernetes.core.k8s:
     kubeconfig: "/home/{{ ansible_user }}/.kube/config"
+    apply: true
     state: present
     definition:
       apiVersion: source.toolkit.fluxcd.io/v1beta2
@@ -58,7 +65,8 @@
       spec:
         interval: 1m
         url: "https://github.com/sfotiadis/flux-rpi-cluster"
-        branch: "main"
+        ref:
+          branch: "main"
   when: not ansible_check_mode
 
 - name: Create Kustomization to sync Git repository
@@ -73,7 +81,7 @@
         namespace: flux-system
       spec:
         interval: 1m
-        path: "./clusters/{{ cluster_name }} }}"
+        path: "./clusters/{{ cluster_name }}"
         prune: true
         sourceRef:
           kind: GitRepository
